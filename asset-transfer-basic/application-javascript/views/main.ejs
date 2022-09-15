@@ -10,11 +10,14 @@
         <h1><%= message %></h1>
         <br>
         <button onclick="f()"> Get cosas</button>
+        <br>
         <div style="border-color: aquamarine;width: 50%;height: 50%;border-style: solid; ">
             <p id="assets"></p>
         </div>
+        <br>
 
-        <button onclick="h()"> Put cosas</button>
+        <button> Put cosas</button>
+        <br>
         <div style="border-color: aquamarine;width: 50%;height: 50%;border-style: solid;  display: flex; flex-direction: column; align-items: center">
             <p id="assetsAPoner"></p>
             <form action="http://localhost:3000/postData" method="post" style="border-color: black;border-style: solid;  display: flex; flex-direction: column; align-items: center">
@@ -26,6 +29,22 @@
                 <input type="submit">
             </form>
         </div>
+        <br>
+        <button onclick="bloque()"> Geteacion de bloque</button>
+        <input type="number" id="bloque"/>
+        <br>
+        <div style="overflow: scroll; border-color: aquamarine;width: 50%;height: 50%;border-style: solid; ">
+            <p id="block"/>
+        </div>
+
+        <br>
+        <button onclick="events()"> Geteacion de eventos</button>
+        <br>
+        <div style="overflow: scroll; border-color: aquamarine;width: 50%;height: 50%;border-style: solid; ">
+            <p id="events"/>
+        </div>
+
+
     </div>
     </body>
 </html>

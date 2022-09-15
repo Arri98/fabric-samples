@@ -1,10 +1,14 @@
 let express = require('express');
 let router = express.Router();
-let {getAllAssets, putAsset} = require('../app2');
+let {getAllAssets, putAsset, getBlock, getEvents} = require('../app2');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	res.render('main', {message: ''});
+	if(req.query.message){
+		res.render('main',{message: req.query.message})
+	}else{
+		res.render('main', {message: ''});
+	}
 });
 
 router.get('/assets',function (req,res) {
@@ -17,10 +21,25 @@ router.get('/assets',function (req,res) {
 
 router.post('/postData',function (req,res) {
 	putAsset(req.body).then( () => {
-			res.render('main', {message: 'Se procedio a la guardacion'});
+		res.message = 'Se procedio a la guardacion';
+			res.redirect('/?message=Se procedio a la guardacion');
 	}
 	);
 
+})
+
+router.get('/block/:id',function (req,res) {
+	console.log("Me piden bloque");
+	console.log(req.params.id);
+	getBlock(req.params.id).then(
+		block => res.json(block)
+	);
+
+});
+
+router.get('/events',function (req,res) {
+	console.log("Me piden events");
+	res.json({events:getEvents()})
 })
 
 module.exports = router;

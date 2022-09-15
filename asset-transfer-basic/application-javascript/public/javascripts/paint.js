@@ -10,3 +10,28 @@ function f() {
 	})
 }
 
+function bloque() {
+	fetch('http://localhost:3000/block/'+document.getElementById("bloque").value).then(res =>{
+		res.json().then( data => {
+				console.log(data);
+				 data = JSON.stringify(data);
+				document.getElementById('block').innerHTML = data;
+			}
+		)
+	})
+}
+
+
+
+
+function events() {
+	fetch('http://localhost:3000/events').then(res =>{
+		res.json().then( data => {
+				console.log(data);
+				data = JSON.stringify(data.events);
+				document.getElementById('events').innerHTML = data;
+			}
+		)
+	})
+}
+
