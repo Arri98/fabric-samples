@@ -1,4 +1,6 @@
 'use strict';
+const config = require('./pollConfig');
+const fetch = require('node-fetch');
 
 const { Gateway, Wallets } = require('fabric-network');
 const {BlockDecoder} = require('fabric-common');
@@ -15,7 +17,7 @@ const walletPath = path.join(__dirname, 'wallet');
 const org1UserId = 'appUser';
 
 let contract;
-let qscc;
+let qscc; //Esto parece que viene instalado de base, la documentacion son los padres
 let listener;
 let events = [];
 
@@ -36,10 +38,10 @@ async function main() {
 
 		const network = await gateway.getNetwork(channelName);
 
-		console.log("got blockDecoder")
+		console.log("got blockDecoder");
 
 		//Get el contrato de pedir bloques
-		qscc = network.getContract('qscc');;
+		qscc = network.getContract('qscc');
 		console.log("got qscc");
 
 		// Get the contract from the network.
@@ -48,10 +50,11 @@ async function main() {
 
 		listener = await network.addBlockListener(async (blockEvent) => {
 			let data =blockEvent.blockData;
-			console.log(data);
-			events.push(data);
+			events.push(data.header);
 		});
-		console.log("Set listener")
+		console.log("Set listener");
+
+		fetchData();
 
 	}catch (e) {
 		console.error(`******** FAILED to run the application: ${e}`);
@@ -59,32 +62,47 @@ async function main() {
 }
 
 //Devuelve tod o (si pongo todo me sale este todo)
-async function getAllAssets(){
+async function getAllData(){
 	console.log("Dame");
 	const result = await contract.evaluateTransaction('GetAllAssets');
 	return result;
 }
 
 //Guarda asset
-async function putAsset(asset){
+async function putData(data){
 	console.log("Saving");
-	let result = await contract.submitTransaction('CreateAsset', asset.id, asset.color, asset.size, asset.owner, asset.value);
-	console.log(result);
+	let result = await contract.submitTransaction('CreateAsset', data.timestamp, data.temperature, data.pressure);
 }
 
+//Info del bloque pedido
 async function getBlock(blockNumber){
 	console.log("Asking for block");
 	const resultByte = await qscc.evaluateTransaction(
 		'GetBlockByNumber', channelName, String(blockNumber));
 	let text = BlockDecoder.decode(resultByte);
-	console.log(text);
 	return  text;
 }
 
+//Eventos desde la ultima peticion
 function getEvents() {
 	let temp = events;
 	events = [];
 	return temp;
 }
 
-module.exports = {main, getAllAssets,putAsset, getBlock, getEvents};
+const fetchData = async () => {
+	console.log("Fetching");
+	const data = await fetch(config.route)
+	const jsonData = await data.json();
+
+	jsonData.forEach((sensorData)=>{
+		putData(sensorData);
+	});
+	setTimeout(fetchData, config.timeout);
+};
+
+
+//todo: update si tiene sentido, remove si tiene sentido, cosas de la chain si las quieren para demostracion
+//also mirar como de facil es cambiar el chaincode f
+
+module.exports = {main, getAllAssets: getAllData,putAsset: putData, getBlock, getEvents, fetchData};

@@ -15,7 +15,6 @@ router.get('/assets',function (req,res) {
 	console.log("Me llaman")
 	getAllAssets().then(assets => {
 		assets = JSON.stringify(JSON.parse(assets), null, 2);
-		console.log(assets);
 		res.json(assets)});
 });
 
@@ -26,7 +25,7 @@ router.post('/postData',function (req,res) {
 	}
 	);
 
-})
+});
 
 router.get('/block/:id',function (req,res) {
 	console.log("Me piden bloque");

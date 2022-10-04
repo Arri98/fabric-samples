@@ -70,22 +70,19 @@ class AssetTransfer extends Contract {
     }
 
     // CreateAsset issues a new asset to the world state with given details.
-    async CreateAsset(ctx, id, color, size, owner, appraisedValue) {
-        const exists = await this.AssetExists(ctx, id);
+    async CreateAsset(ctx, timestamp, temperature, pressure ) {
+        const exists = await this.AssetExists(ctx, timestamp);
         if (exists) {
-            throw new Error(`The asset ${id} already exists`);
+            throw new Error(`The asset ${timestamp} already exists`);
         }
-
-        const asset = {
-            ID: id,
-            Color: color,
-            Size: size,
-            Owner: owner,
-            AppraisedValue: appraisedValue,
+        const data = {
+            ID: timestamp,
+            temperature: temperature,
+            pressure: pressure,
         };
         //we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-        await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
-        return JSON.stringify(asset);
+        await ctx.stub.putState(timestamp, Buffer.from(stringify(sortKeysRecursive(data))));
+        return JSON.stringify(data);
     }
 
     // ReadAsset returns the asset stored in the world state with given id.
