@@ -36,8 +36,13 @@ app.use(function(err, req, res, next) {
 
 let temp = 30;
 let press = 50;
+let humi = 30;
+let quality = 60;
+let move = 30;
+let coor = "1, 2";
 
 const calculateNextValue = (delta, max, min, previousV) => {
+
     let nextValue = (Math.random() * delta*2 - delta) + previousV;
     if(nextValue > max) {
         nextValue = max;
@@ -45,15 +50,24 @@ const calculateNextValue = (delta, max, min, previousV) => {
         nextValue = min;
     }
     return nextValue;
+
 };
 
 const createFakeData = () => {
     temp = calculateNextValue(config.deltaT, config.maxT, config.minT, temp);
     press = calculateNextValue(config.deltaP, config.maxP, config.minP, press);
+    humi = calculateNextValue(config.deltaH, config.maxH, config.minH, humi);
+    move = calculateNextValue(config.deltaM, config.maxM, config.minM, move);
+    quality = calculateNextValue(config.deltaQ, config.maxQ, config.minQ, quality);
+
     let sensorFakeData = {
         temperature: temp ,
         pressure: press,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        humidity: humi,
+        airQuality: quality,
+        movement: move,
+        coordenates: coor,
     };
     console.log(sensorFakeData);
     data.push(sensorFakeData);

@@ -1,18 +1,22 @@
 let express = require('express');
+let { faker } = require ('@faker-js/faker');
+
+
 let router = express.Router();
 let {getAllAssets, putAsset, getBlock, getEvents} = require('../app2');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-	if(req.query.message){
-		res.render('main',{message: req.query.message})
-	}else{
-		res.render('main', {message: ''});
-	}
+
+	let message = req.query.message;
+	message = message ? message : '';
+	let rand = faker.hacker.phrase();
+	message = `${message} \n ${rand}`;
+	res.render('main', {message});
 });
 
 router.get('/assets',function (req,res) {
-	console.log("Me llaman")
+	console.log("Me llaman");
 	getAllAssets().then(assets => {
 		assets = JSON.stringify(JSON.parse(assets), null, 2);
 		res.json(assets)});

@@ -70,7 +70,7 @@ class AssetTransfer extends Contract {
     }
 
     // CreateAsset issues a new asset to the world state with given details.
-    async CreateAsset(ctx, timestamp, temperature, pressure ) {
+    async CreateAsset(ctx, timestamp, temperature, pressure, humidity, airQuality, movement, coordenates ) {
         const exists = await this.AssetExists(ctx, timestamp);
         if (exists) {
             throw new Error(`The asset ${timestamp} already exists`);
@@ -79,6 +79,10 @@ class AssetTransfer extends Contract {
             ID: timestamp,
             temperature: temperature,
             pressure: pressure,
+            humidity,
+            airQuality,
+            movement,
+            coordenates
         };
         //we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(timestamp, Buffer.from(stringify(sortKeysRecursive(data))));

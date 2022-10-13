@@ -71,7 +71,8 @@ async function getAllData(){
 //Guarda asset
 async function putData(data){
 	console.log("Saving");
-	let result = await contract.submitTransaction('CreateAsset', data.timestamp, data.temperature, data.pressure);
+	let {timestamp, temperature, pressure, humidity, airQuality, movement, coordenates } = {...data}
+	let result = await contract.submitTransaction('CreateAsset', timestamp, temperature, pressure, humidity, airQuality, movement, coordenates );
 }
 
 //Info del bloque pedido
