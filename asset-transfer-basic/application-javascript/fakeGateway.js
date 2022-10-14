@@ -35,7 +35,7 @@ app.use(function(err, req, res, next) {
 
 
 let temp = 30;
-let press = 50;
+let press = 800;
 let humi = 30;
 let quality = 60;
 let move = 30;

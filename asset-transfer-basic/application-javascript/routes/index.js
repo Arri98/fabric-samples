@@ -7,12 +7,12 @@ let {getAllAssets, putAsset, getBlock, getEvents} = require('../app2');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-
+	console.log('?????');
 	let message = req.query.message;
 	message = message ? message : '';
 	let rand = faker.hacker.phrase();
 	message = `${message} \n ${rand}`;
-	res.render('main', {message});
+	res.render('view.ejs', {message});
 });
 
 router.get('/assets',function (req,res) {

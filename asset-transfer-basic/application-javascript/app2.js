@@ -102,8 +102,4 @@ const fetchData = async () => {
 	setTimeout(fetchData, config.timeout);
 };
 
-
-//todo: update si tiene sentido, remove si tiene sentido, cosas de la chain si las quieren para demostracion
-//also mirar como de facil es cambiar el chaincode f
-
 module.exports = {main, getAllAssets: getAllData,putAsset: putData, getBlock, getEvents, fetchData};

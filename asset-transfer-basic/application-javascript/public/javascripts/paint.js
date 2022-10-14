@@ -10,13 +10,13 @@ let startTimestamp=Date.now();
 let lastTimestamp=0;
 
 function f() {
+	console.log("Fetch");
 	fetch('http://localhost:3000/assets').then(res =>{
 		res.json().then( data => {
 				const jsonData = JSON.parse(data);
 				// dataTemp = [];
 				jsonData.forEach(d => {
 					if(d.ID>lastTimestamp){
-						console.log(jsonData);
 						lastTimestamp=d.ID;
 						temperatureDataset.datasets.forEach(dataset => {
 							dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.temperature});
@@ -35,8 +35,8 @@ function f() {
 				moveChart.update();
 				pressChart.update();
 				humChart.update();
-				data =  JSON.stringify(jsonData, null, 2);
-				document.getElementById('assets').innerHTML = data;
+				//data =  JSON.stringify(jsonData, null, 2);
+				//document.getElementById('assets').innerHTML = data;
 		}
 		)
 	})
@@ -87,11 +87,16 @@ const configTemp = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min:-10,
-				max: 50
+				max: 50,
+				ticks: {
+					callback: function(value, index, ticks) {
+						return value + '°C';
+					}
+				}
 			}
 		}
 	}
@@ -122,11 +127,16 @@ const configQual = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min: 0,
-				max: 100
+				max: 100,
+				ticks: {
+					callback: function(value, index, ticks) {
+						return value + '%';
+					}
+				}
 			}
 		}
 	}
@@ -157,7 +167,7 @@ const configMove = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -178,7 +188,6 @@ const pressureDataset = {
 		borderWidth: 1,
 		tension: 0,
 		showLine: true
-
 	}]
 };
 
@@ -192,11 +201,16 @@ const configPress = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min:0,
-				max: 100
+				max: 1050,
+				ticks: {
+					callback: function(value, index, ticks) {
+						return value + ' mbar';
+					}
+				}
 			}
 		}
 	}
@@ -227,7 +241,7 @@ const configCoor = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -261,11 +275,16 @@ const configHum = {
 				type: 'linear',
 				position: 'bottom',
 				min: -300,
-				max: 300
+				suggestedMax: 300
 			},
 			y:{
 				min: 0,
-				max: 100
+				max: 100,
+				ticks: {
+					callback: function(value, index, ticks) {
+						return value + '%';
+					}
+				}
 			}
 		}
 	}
@@ -306,7 +325,6 @@ const pressChart = new Chart(
 
 
 function fTimeout() {
-	console.log("fetch")
 	f();
 	setTimeout(fTimeout,1000);
 }
