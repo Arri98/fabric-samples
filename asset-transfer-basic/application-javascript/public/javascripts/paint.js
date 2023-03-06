@@ -6,30 +6,45 @@ let dataMove = [];
 let dataPress = [];
 let dataQual = [];
 let dataHum = [];
-let startTimestamp=Date.now();
+let startTimestamp=Date.now() - 24*60*60*1000;
 let lastTimestamp=0;
 
 function f() {
 	console.log("Fetch");
-	fetch('http://localhost:3000/assets').then(res =>{
-		res.json().then( data => {
-				const jsonData = JSON.parse(data);
+	fetch(window.location.href + `/dataFrom/${lastTimestamp}`).then(res =>{
+		res.json().then( jsonData => {
 				// dataTemp = [];
+				let tempLastT=lastTimestamp;
 				jsonData.forEach(d => {
 					if(d.ID>lastTimestamp){
 						lastTimestamp=d.ID;
+						let time = new Date(Number(d.ID));
 						temperatureDataset.datasets.forEach(dataset => {
-							dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.temperature});
-						})
+							dataset.data.push({x:time, y:d.temperature});
+							if (dataset.data.length > 100){
+								dataset.data.pop();
+							}
+						});
 						humidityDataset.datasets.forEach(dataset => {
-							dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.humidity})
+							dataset.data.push({x:time, y:d.humidity})
+							if (dataset.data.length > 100){
+								dataset.data.pop();
+							}
 						});
 						// coorChart.data.push({x:(d.ID-startTimestamp)/100, y:d.coordenates});
-						pressureDataset.datasets.forEach(dataset => {dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.pressure})	});
-						movementDataset.datasets.forEach(dataset => {dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.movement})	});
-						qualityDataset.datasets.forEach(dataset => {dataset.data.push({x:(d.ID-startTimestamp)/100, y:d.airQuality})	});
+						pressureDataset.datasets.forEach(dataset => {dataset.data.push({x:time, y:d.pressure});	if (dataset.data.length > 100){
+							dataset.data.pop();
+						}	});
+						movementDataset.datasets.forEach(dataset => {dataset.data.push({x:time, y:d.movement});	if (dataset.data.length > 100){
+							dataset.data.pop();
+						}});
+						qualityDataset.datasets.forEach(dataset => {dataset.data.push({x:time, y:d.airQuality});	if (dataset.data.length > 100){
+							dataset.data.pop();
+						}});
 					}
 				});
+				console.log(lastTimestamp);
+				lastTimestamp = tempLastT;
 				tempChart.update();
 				qualChart.update();
 				moveChart.update();
@@ -84,10 +99,8 @@ const configTemp = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min:-10,
@@ -124,10 +137,8 @@ const configQual = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -164,10 +175,8 @@ const configMove = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -198,10 +207,8 @@ const configPress = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min:0,
@@ -238,10 +245,8 @@ const configCoor = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -272,10 +277,8 @@ const configHum = {
 	options: {
 		scales: {
 			x: {
-				type: 'linear',
+				type: 'time',
 				position: 'bottom',
-				min: -300,
-				suggestedMax: 300
 			},
 			y:{
 				min: 0,
@@ -326,7 +329,7 @@ const pressChart = new Chart(
 
 function fTimeout() {
 	f();
-	setTimeout(fTimeout,1000);
+	setTimeout(fTimeout,4000);
 }
 
 fTimeout();

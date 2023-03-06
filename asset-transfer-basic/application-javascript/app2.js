@@ -17,7 +17,7 @@ const walletPath = path.join(__dirname, 'wallet');
 const org1UserId = 'appUser';
 
 let contract;
-let qscc; //Esto parece que viene instalado de base, la documentacion son los padres
+let qscc;
 let listener;
 let events = [];
 
@@ -50,6 +50,9 @@ async function main() {
 
 		listener = await network.addBlockListener(async (blockEvent) => {
 			let data =blockEvent.blockData;
+			if(events.lenght > 500) {
+				events.pop();
+			}
 			events.push(data.header);
 		});
 		console.log("Set listener");
@@ -61,27 +64,25 @@ async function main() {
 	}
 }
 
-//Devuelve tod o (si pongo todo me sale este todo)
+//Devuelve
 async function getAllData(){
-	console.log("Dame");
 	const result = await contract.evaluateTransaction('GetAllAssets');
 	return result;
 }
 
-//Guarda asset
+//Guarda medida
 async function putData(data){
-	console.log("Saving");
 	let {timestamp, temperature, pressure, humidity, airQuality, movement, coordenates } = {...data}
 	let result = await contract.submitTransaction('CreateAsset', timestamp, temperature, pressure, humidity, airQuality, movement, coordenates );
 }
 
 //Info del bloque pedido
 async function getBlock(blockNumber){
-	console.log("Asking for block");
 	const resultByte = await qscc.evaluateTransaction(
 		'GetBlockByNumber', channelName, String(blockNumber));
 	let text = BlockDecoder.decode(resultByte);
-	return  text;
+	console.log(text);
+	return  ({header: text.header, hash: text.data_hash, singature: text.signature_header, metadata: text.metadata.metadata});
 }
 
 //Eventos desde la ultima peticion
@@ -92,8 +93,7 @@ function getEvents() {
 }
 
 const fetchData = async () => {
-	console.log("Fetching");
-	const data = await fetch(config.route)
+	const data = await fetch(config.route);
 	const jsonData = await data.json();
 
 	jsonData.forEach((sensorData)=>{
@@ -102,4 +102,18 @@ const fetchData = async () => {
 	setTimeout(fetchData, config.timeout);
 };
 
-module.exports = {main, getAllAssets: getAllData,putAsset: putData, getBlock, getEvents, fetchData};
+
+async function getDataFromTimestamp(timestamp) {
+	let allData = await getAllData();
+	allData = JSON.parse(JSON.stringify(JSON.parse(allData), null, 2));
+	let tempDataFrom = [];
+	console.log(typeof allData);
+	allData.forEach(data=>{
+		if(data.ID>timestamp){
+			tempDataFrom.push(data);
+		}
+	});
+	return tempDataFrom;
+}
+
+module.exports = {main, getAllAssets: getAllData,putAsset: putData, getBlock, getEvents, fetchData, getDataFromTimestamp};
